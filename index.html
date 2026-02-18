@@ -10,9 +10,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-DYBX85Q6KM', {
-    send_page_view: true
-  });
+  gtag('config', 'G-DYBX85Q6KM', { send_page_view: true });
 </script>
 
 <title>Quiz Meme Programador 🤪</title>
@@ -27,6 +25,7 @@ body {
     overflow: hidden;
 }
 
+/* Emoji gigante lateral */
 .emoji-lateral {
     position: fixed;
     left: 20px;
@@ -37,6 +36,7 @@ body {
     z-index: 1;
 }
 
+/* Card central */
 .card {
     position: relative;
     margin-left: 200px;
@@ -76,9 +76,38 @@ button {
 
 button:hover { opacity: 0.85; }
 
+/* 🔥 MÓVIL ULTRA GIGANTE */
 @media (max-width: 600px) {
-    .emoji-lateral { font-size: 110px; left: 10px; }
-    .card { margin-left: 130px; }
+    .emoji-lateral {
+        font-size: 180px;
+        left: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .card {
+        margin-left: 10px;
+        width: calc(100% - 20px);
+        height: calc(100vh - 20px);
+        padding: 30px;
+        border-radius: 20px;
+        font-size: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    h2 {
+        font-size: 28px;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    button {
+        font-size: 22px;
+        padding: 18px;
+        margin: 10px 0;
+    }
 }
 </style>
 </head>
@@ -113,7 +142,7 @@ window.addEventListener("scroll", () => {
 const preguntas = [
     { emoji:"🤯", p:"¿Qué hace un programador cuando el código funciona?", o:["Llora","No lo toca jamás","Borra todo"], r:1 },
     { emoji:"😂", p:"¿Qué significa 'funciona en mi máquina'?", o:["Es magia","Tu problema","Bug fantasma"], r:1 },
-    { emoji:"☕", p:"¿Cuál es el verdadero combustible del código?", o:["Electricidad","Café","Errores"], r:1 },
+    { emoji:"☕", p:"Cuál es el verdadero combustible del código?", o:["Electricidad","Café","Errores"], r:1 },
     { emoji:"💀", p:"¿Qué pasa si borras una línea random?", o:["Nada","Todo explota","Se arregla solo"], r:1 },
     { emoji:"🤡", p:"¿Cuántas horas toma arreglar un bug?", o:["5 minutos","2 días","Depende del ego"], r:2 },
     { emoji:"🧠", p:"¿Dónde vive la mayoría de bugs?", o:["En el teclado","En la lógica","En producción"], r:2 },
@@ -153,10 +182,7 @@ function nuevaPregunta() {
     document.getElementById("pregunta").textContent = actual.p;
     document.getElementById("emoji").textContent = actual.emoji;
 
-    gtag('event', 'nueva_pregunta', {
-        pregunta: actual.p,
-        emoji: actual.emoji
-    });
+    gtag('event', 'nueva_pregunta', { pregunta: actual.p, emoji: actual.emoji });
 
     const cont = document.getElementById("opciones");
     cont.innerHTML = "";
@@ -173,10 +199,7 @@ function validar(i, boton) {
     const emoji = document.getElementById("emoji");
     const correcta = i === actual.r;
 
-    gtag('event', 'respuesta', {
-        correcta: correcta,
-        pregunta: actual.p
-    });
+    gtag('event', 'respuesta', { correcta: correcta, pregunta: actual.p });
 
     if (correcta) {
         boton.classList.add("correct");
@@ -198,6 +221,8 @@ nuevaPregunta();
 
 </body>
 </html>
+
+
 
 
 
