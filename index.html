@@ -26,9 +26,15 @@ body {
     align-items: center;
     color: white;
     text-align: center;
+    overflow: hidden;
 }
 
-/* Pregunta gigante principal */
+@keyframes flotar {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
 .pregunta-grande {
     font-size: 42px;
     max-width: 90%;
@@ -36,27 +42,16 @@ body {
     font-weight: bold;
 }
 
-/* Card solo opciones + botón música */
 .card {
     background: rgba(0,0,0,0.5);
     border: 4px solid #00e5ff;
     box-shadow: 0 0 40px #00e5ff;
-    padding: 35px;
+    padding: 30px;
     border-radius: 30px;
-    width: 650px;
+    width: 600px;
     max-width: 90%;
 }
 
-/* Botón música */
-.music {
-    background: linear-gradient(45deg, #00e5ff, #ff4ecd);
-    color: black;
-    border-radius: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-/* Botones */
 button {
     width: 100%;
     padding: 16px;
@@ -72,33 +67,24 @@ button {
 
 button:hover { opacity: 0.9; }
 
-/* Emoji gigante debajo */
 .emoji {
     font-size: 160px;
-    margin-top: 35px;
+    margin-top: 30px;
+    animation: flotar 3s infinite ease-in-out;
     transition: transform 0.3s;
 }
 
-/* 📱 MÓVIL */
+.reiniciar {
+    background: gold;
+    color: black;
+    font-weight: bold;
+}
+
 @media (max-width: 900px) {
-
-    .pregunta-grande {
-        font-size: 36px;
-    }
-
-    .card {
-        width: 95vw;
-        padding: 40px;
-    }
-
-    button {
-        font-size: 24px;
-        padding: 22px;
-    }
-
-    .emoji {
-        font-size: 220px;
-    }
+    .pregunta-grande { font-size: 32px; }
+    .card { width: 95vw; padding: 35px; }
+    button { font-size: 22px; padding: 20px; }
+    .emoji { font-size: 200px; }
 }
 </style>
 </head>
@@ -108,15 +94,10 @@ button:hover { opacity: 0.9; }
 <div class="pregunta-grande" id="pregunta"></div>
 
 <div class="card">
-    <button class="music" id="musicBtn">🎵 Activar música</button>
     <div id="opciones"></div>
 </div>
 
 <div class="emoji" id="emoji">🤔</div>
-
-<audio id="musica" loop>
-    <source src="amarillo.mp3" type="audio/mpeg">
-</audio>
 
 <script>
 
@@ -132,54 +113,52 @@ window.addEventListener("scroll", () => {
     }
 });
 
-const preguntas = [
-    { emoji:"🤯", p:"¿Qué hace un programador cuando el código funciona?", o:["Llora","No lo toca jamás","Borra todo"], r:1 },
-    { emoji:"😂", p:"¿Qué significa 'funciona en mi máquina'?", o:["Es magia","Tu problema","Bug fantasma"], r:1 },
-    { emoji:"☕", p:"Cuál es el verdadero combustible del código?", o:["Electricidad","Café","Errores"], r:1 },
-    { emoji:"💀", p:"¿Qué pasa si borras una línea random?", o:["Nada","Todo explota","Se arregla solo"], r:1 },
-    { emoji:"🤡", p:"¿Cuántas horas toma arreglar un bug?", o:["5 minutos","2 días","Depende del ego"], r:2 },
-    { emoji:"🧠", p:"¿Dónde vive la mayoría de bugs?", o:["En el teclado","En la lógica","En producción"], r:2 },
-    { emoji:"😴", p:"¿El programador duerme?", o:["Sí","No","Error 404"], r:2 },
-    { emoji:"🔥", p:"¿Cuál es el mejor debugger?", o:["console.log()","Rezar","Gritar"], r:0 },
-    { emoji:"🫠", p:"¿Qué sientes cuando el error desaparece solo?", o:["Felicidad","Miedo","Desconfianza"], r:2 },
-    { emoji:"😵‍💫", p:"¿Qué rompe más código?", o:["Un junior","Un update","Un 'arreglito rápido'"], r:2 },
-    { emoji:"🧪", p:"¿Dónde se prueba el código?", o:["Local","Staging","Producción"], r:2 },
-    { emoji:"📦", p:"¿Qué es un bug?", o:["Un error","Una feature","Un susto"], r:1 },
-    { emoji:"😈", p:"¿Quién rompió el código?", o:["Yo","Git","El compañero"], r:0 },
-    { emoji:"🧻", p:"¿Para qué sirve la documentación?", o:["Para leer","Para decorar","Para ignorar"], r:2 },
-    { emoji:"🚀", p:"¿Cuándo funciona todo perfecto?", o:["Nunca","Antes del deploy","En sueños"], r:2 }
+const preguntasOriginales = [
+{ emoji:"🤯", p:"¿Qué hace un programador cuando el código funciona?", o:["Llora","No lo toca jamás","Borra todo"], r:1 },
+{ emoji:"😂", p:"¿Qué significa 'funciona en mi máquina'?", o:["Es magia","Tu problema","Bug fantasma"], r:1 },
+{ emoji:"☕", p:"Cuál es el verdadero combustible del código?", o:["Electricidad","Café","Errores"], r:1 },
+{ emoji:"💀", p:"¿Qué pasa si borras una línea random?", o:["Nada","Todo explota","Se arregla solo"], r:1 },
+{ emoji:"🤡", p:"¿Cuántas horas toma arreglar un bug?", o:["5 minutos","2 días","Depende del ego"], r:2 },
+{ emoji:"🧠", p:"¿Dónde vive la mayoría de bugs?", o:["En el teclado","En la lógica","En producción"], r:2 },
+{ emoji:"😴", p:"¿El programador duerme?", o:["Sí","No","Error 404"], r:2 },
+{ emoji:"🔥", p:"¿Cuál es el mejor debugger?", o:["console.log()","Rezar","Gritar"], r:0 },
+{ emoji:"🫠", p:"¿Qué sientes cuando el error desaparece solo?", o:["Felicidad","Miedo","Desconfianza"], r:2 },
+{ emoji:"😵‍💫", p:"¿Qué rompe más código?", o:["Un junior","Un update","Un 'arreglito rápido'"], r:2 },
+{ emoji:"🧪", p:"¿Dónde se prueba el código?", o:["Local","Staging","Producción"], r:2 },
+{ emoji:"📦", p:"¿Qué es un bug?", o:["Un error","Una feature","Un susto"], r:1 },
+{ emoji:"😈", p:"¿Quién rompió el código?", o:["Yo","Git","El compañero"], r:0 },
+{ emoji:"🧻", p:"¿Para qué sirve la documentación?", o:["Para leer","Para decorar","Para ignorar"], r:2 },
+{ emoji:"🚀", p:"¿Cuándo funciona todo perfecto?", o:["Nunca","Antes del deploy","En sueños"], r:2 }
 ];
 
+let preguntas = [];
 let actual = {};
+let puntuacion = 0;
+let indice = 0;
 
-/* 🎵 BOTÓN MÚSICA */
-const musica = document.getElementById("musica");
-const musicBtn = document.getElementById("musicBtn");
-let sonando = false;
-
-musicBtn.onclick = () => {
-    gtag('event', 'click_musica', { estado: !sonando ? 'play' : 'pause' });
-
-    if (!sonando) {
-        musica.play();
-        musicBtn.textContent = "⏸️ Pausar música";
-    } else {
-        musica.pause();
-        musicBtn.textContent = "🎵 Activar música";
-    }
-    sonando = !sonando;
-};
+function iniciarJuego() {
+    preguntas = [...preguntasOriginales].sort(() => Math.random() - 0.5);
+    puntuacion = 0;
+    indice = 0;
+    nuevaPregunta();
+}
 
 function nuevaPregunta() {
 
-    actual = preguntas[Math.floor(Math.random() * preguntas.length)];
+    if (indice >= preguntas.length) {
+        mostrarResultado();
+        return;
+    }
+
+    actual = preguntas[indice];
+    indice++;
 
     document.getElementById("pregunta").textContent = actual.p;
     document.getElementById("emoji").textContent = actual.emoji;
 
     gtag('event', 'nueva_pregunta', {
-        pregunta: actual.p,
-        emoji: actual.emoji
+        numero: indice,
+        pregunta: actual.p
     });
 
     const cont = document.getElementById("opciones");
@@ -204,12 +183,13 @@ function validar(i, boton) {
     });
 
     if (correcta) {
+        puntuacion++;
         boton.classList.add("correct");
-        emoji.style.transform = "scale(1.3) rotate(-8deg)";
+        emoji.style.transform = "scale(1.4) rotate(-10deg)";
     } else {
         boton.classList.add("wrong");
         emoji.textContent = "💥";
-        emoji.style.transform = "scale(1.3) rotate(10deg)";
+        emoji.style.transform = "scale(1.4) rotate(10deg)";
     }
 
     setTimeout(() => {
@@ -218,12 +198,38 @@ function validar(i, boton) {
     }, 900);
 }
 
-nuevaPregunta();
+function mostrarResultado() {
+
+    gtag('event', 'quiz_terminado', {
+        puntuacion: puntuacion,
+        total: preguntas.length
+    });
+
+    document.getElementById("pregunta").innerHTML =
+        `🎉 Terminaste! <br> Puntuación: ${puntuacion} / ${preguntas.length}`;
+
+    document.getElementById("opciones").innerHTML =
+        `<button class="reiniciar" onclick="iniciarJuego()">🔄 Jugar otra vez</button>`;
+
+    const emoji = document.getElementById("emoji");
+
+    if (puntuacion === preguntas.length) {
+        emoji.textContent = "🏆";
+    } else if (puntuacion > preguntas.length / 2) {
+        emoji.textContent = "😎";
+    } else {
+        emoji.textContent = "😂";
+    }
+}
+
+iniciarJuego();
 
 </script>
 
 </body>
 </html>
+
+
 
 
 
