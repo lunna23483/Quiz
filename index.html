@@ -2,6 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYBX85Q6KM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DYBX85Q6KM', {
+    send_page_view: true
+  });
+</script>
+
 <title>Quiz Meme Programador 🤪</title>
 
 <style>
@@ -14,7 +27,6 @@ body {
     overflow: hidden;
 }
 
-/* 😍 EMOJI GIGANTE IZQUIERDA */
 .emoji-lateral {
     position: fixed;
     left: 20px;
@@ -25,7 +37,6 @@ body {
     z-index: 1;
 }
 
-/* CARD */
 .card {
     position: relative;
     margin-left: 200px;
@@ -38,7 +49,6 @@ body {
     max-width: 440px;
 }
 
-/* BOTÓN MÚSICA */
 .music {
     background: linear-gradient(45deg, #00e5ff, #ff4ecd);
     color: black;
@@ -46,13 +56,11 @@ body {
     font-weight: bold;
 }
 
-/* PREGUNTA */
 h2 {
     font-size: 20px;
     margin: 20px 0;
 }
 
-/* BOTONES */
 button {
     width: 100%;
     padding: 14px;
@@ -66,20 +74,11 @@ button {
 .correct { background: #2ecc71; }
 .wrong { background: #e74c3c; }
 
-button:hover {
-    opacity: 0.85;
-}
+button:hover { opacity: 0.85; }
 
-/* RESPONSIVE */
 @media (max-width: 600px) {
-    .emoji-lateral {
-        font-size: 110px;
-        left: 10px;
-    }
-
-    .card {
-        margin-left: 130px;
-    }
+    .emoji-lateral { font-size: 110px; left: 10px; }
+    .card { margin-left: 130px; }
 }
 </style>
 </head>
@@ -89,12 +88,9 @@ button:hover {
 <div class="emoji-lateral" id="emoji">🤔</div>
 
 <div class="card">
-
     <button class="music" id="musicBtn">🎵 Activar música</button>
-
     <h2 id="pregunta"></h2>
     <div id="opciones"></div>
-
 </div>
 
 <audio id="musica" loop>
@@ -102,6 +98,18 @@ button:hover {
 </audio>
 
 <script>
+/* 📊 EVENTO: VISITA */
+gtag('event', 'visita_quiz');
+
+/* 📜 EVENTO: SCROLL */
+let scrolleado = false;
+window.addEventListener("scroll", () => {
+    if (!scrolleado) {
+        gtag('event', 'scroll_pagina');
+        scrolleado = true;
+    }
+});
+
 const preguntas = [
     { emoji:"🤯", p:"¿Qué hace un programador cuando el código funciona?", o:["Llora","No lo toca jamás","Borra todo"], r:1 },
     { emoji:"😂", p:"¿Qué significa 'funciona en mi máquina'?", o:["Es magia","Tu problema","Bug fantasma"], r:1 },
@@ -111,10 +119,9 @@ const preguntas = [
     { emoji:"🧠", p:"¿Dónde vive la mayoría de bugs?", o:["En el teclado","En la lógica","En producción"], r:2 },
     { emoji:"😴", p:"¿El programador duerme?", o:["Sí","No","Error 404"], r:2 },
     { emoji:"🔥", p:"¿Cuál es el mejor debugger?", o:["console.log()","Rezar","Gritar"], r:0 },
-
     { emoji:"🫠", p:"¿Qué sientes cuando el error desaparece solo?", o:["Felicidad","Miedo","Desconfianza"], r:2 },
     { emoji:"😵‍💫", p:"¿Qué rompe más código?", o:["Un junior","Un update","Un 'arreglito rápido'"], r:2 },
-    { emoji:"🧪", p:"¿Dónde se prueba el código por primera vez?", o:["Local","Staging","Producción"], r:2 },
+    { emoji:"🧪", p:"¿Dónde se prueba el código?", o:["Local","Staging","Producción"], r:2 },
     { emoji:"📦", p:"¿Qué es un bug?", o:["Un error","Una feature","Un susto"], r:1 },
     { emoji:"😈", p:"¿Quién rompió el código?", o:["Yo","Git","El compañero"], r:0 },
     { emoji:"🧻", p:"¿Para qué sirve la documentación?", o:["Para leer","Para decorar","Para ignorar"], r:2 },
@@ -123,12 +130,14 @@ const preguntas = [
 
 let actual = {};
 
-/* 🎵 MÚSICA */
+/* 🎵 BOTÓN MÚSICA */
 const musica = document.getElementById("musica");
 const musicBtn = document.getElementById("musicBtn");
 let sonando = false;
 
 musicBtn.onclick = () => {
+    gtag('event', 'click_musica', { estado: !sonando ? 'play' : 'pause' });
+
     if (!sonando) {
         musica.play();
         musicBtn.textContent = "⏸️ Pausar música";
@@ -144,6 +153,11 @@ function nuevaPregunta() {
     document.getElementById("pregunta").textContent = actual.p;
     document.getElementById("emoji").textContent = actual.emoji;
 
+    gtag('event', 'nueva_pregunta', {
+        pregunta: actual.p,
+        emoji: actual.emoji
+    });
+
     const cont = document.getElementById("opciones");
     cont.innerHTML = "";
 
@@ -157,8 +171,14 @@ function nuevaPregunta() {
 
 function validar(i, boton) {
     const emoji = document.getElementById("emoji");
+    const correcta = i === actual.r;
 
-    if (i === actual.r) {
+    gtag('event', 'respuesta', {
+        correcta: correcta,
+        pregunta: actual.p
+    });
+
+    if (correcta) {
         boton.classList.add("correct");
         emoji.style.transform = "translateY(-50%) scale(1.3) rotate(-8deg)";
     } else {
@@ -178,6 +198,8 @@ nuevaPregunta();
 
 </body>
 </html>
+
+
 
 
 
