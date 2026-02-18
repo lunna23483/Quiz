@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Meme Programador 🤪</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Comic Sans MS", Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #ff4ecd);
+    height: 100vh;
+    color: white;
+    overflow: hidden;
+}
+
+/* 😍 EMOJI GIGANTE IZQUIERDA */
+.emoji-lateral {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 160px;
+    transition: transform 0.3s;
+    z-index: 1;
+}
+
+/* CARD */
+.card {
+    position: relative;
+    margin-left: 200px;
+    background: rgba(0,0,0,0.45);
+    border: 3px solid #00e5ff;
+    box-shadow: 0 0 30px #00e5ff;
+    padding: 25px;
+    border-radius: 26px;
+    width: 85%;
+    max-width: 440px;
+}
+
+/* BOTÓN MÚSICA */
+.music {
+    background: linear-gradient(45deg, #00e5ff, #ff4ecd);
+    color: black;
+    border-radius: 16px;
+    font-weight: bold;
+}
+
+/* PREGUNTA */
+h2 {
+    font-size: 20px;
+    margin: 20px 0;
+}
+
+/* BOTONES */
+button {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 18px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.correct { background: #2ecc71; }
+.wrong { background: #e74c3c; }
+
+button:hover {
+    opacity: 0.85;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .emoji-lateral {
+        font-size: 110px;
+        left: 10px;
+    }
+
+    .card {
+        margin-left: 130px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="emoji-lateral" id="emoji">🤔</div>
+
+<div class="card">
+
+    <button class="music" id="musicBtn">🎵 Activar música</button>
+
+    <h2 id="pregunta"></h2>
+    <div id="opciones"></div>
+
+</div>
+
+<audio id="musica" loop>
+    <source src="amarillo.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const preguntas = [
+    { emoji:"🤯", p:"¿Qué hace un programador cuando el código funciona?", o:["Llora","No lo toca jamás","Borra todo"], r:1 },
+    { emoji:"😂", p:"¿Qué significa 'funciona en mi máquina'?", o:["Es magia","Tu problema","Bug fantasma"], r:1 },
+    { emoji:"☕", p:"¿Cuál es el verdadero combustible del código?", o:["Electricidad","Café","Errores"], r:1 },
+    { emoji:"💀", p:"¿Qué pasa si borras una línea random?", o:["Nada","Todo explota","Se arregla solo"], r:1 },
+    { emoji:"🤡", p:"¿Cuántas horas toma arreglar un bug?", o:["5 minutos","2 días","Depende del ego"], r:2 },
+    { emoji:"🧠", p:"¿Dónde vive la mayoría de bugs?", o:["En el teclado","En la lógica","En producción"], r:2 },
+    { emoji:"😴", p:"¿El programador duerme?", o:["Sí","No","Error 404"], r:2 },
+    { emoji:"🔥", p:"¿Cuál es el mejor debugger?", o:["console.log()","Rezar","Gritar"], r:0 },
+
+    { emoji:"🫠", p:"¿Qué sientes cuando el error desaparece solo?", o:["Felicidad","Miedo","Desconfianza"], r:2 },
+    { emoji:"😵‍💫", p:"¿Qué rompe más código?", o:["Un junior","Un update","Un 'arreglito rápido'"], r:2 },
+    { emoji:"🧪", p:"¿Dónde se prueba el código por primera vez?", o:["Local","Staging","Producción"], r:2 },
+    { emoji:"📦", p:"¿Qué es un bug?", o:["Un error","Una feature","Un susto"], r:1 },
+    { emoji:"😈", p:"¿Quién rompió el código?", o:["Yo","Git","El compañero"], r:0 },
+    { emoji:"🧻", p:"¿Para qué sirve la documentación?", o:["Para leer","Para decorar","Para ignorar"], r:2 },
+    { emoji:"🚀", p:"¿Cuándo funciona todo perfecto?", o:["Nunca","Antes del deploy","En sueños"], r:2 }
+];
+
+let actual = {};
+
+/* 🎵 MÚSICA */
+const musica = document.getElementById("musica");
+const musicBtn = document.getElementById("musicBtn");
+let sonando = false;
+
+musicBtn.onclick = () => {
+    if (!sonando) {
+        musica.play();
+        musicBtn.textContent = "⏸️ Pausar música";
+    } else {
+        musica.pause();
+        musicBtn.textContent = "🎵 Activar música";
+    }
+    sonando = !sonando;
+};
+
+function nuevaPregunta() {
+    actual = preguntas[Math.floor(Math.random() * preguntas.length)];
+    document.getElementById("pregunta").textContent = actual.p;
+    document.getElementById("emoji").textContent = actual.emoji;
+
+    const cont = document.getElementById("opciones");
+    cont.innerHTML = "";
+
+    actual.o.forEach((op, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = op;
+        btn.onclick = () => validar(i, btn);
+        cont.appendChild(btn);
+    });
+}
+
+function validar(i, boton) {
+    const emoji = document.getElementById("emoji");
+
+    if (i === actual.r) {
+        boton.classList.add("correct");
+        emoji.style.transform = "translateY(-50%) scale(1.3) rotate(-8deg)";
+    } else {
+        boton.classList.add("wrong");
+        emoji.textContent = "💥";
+        emoji.style.transform = "translateY(-50%) scale(1.3) rotate(10deg)";
+    }
+
+    setTimeout(() => {
+        emoji.style.transform = "translateY(-50%) scale(1)";
+        nuevaPregunta();
+    }, 900);
+}
+
+nuevaPregunta();
+</script>
+
+</body>
+</html>
+
+
+
