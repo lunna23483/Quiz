@@ -19,20 +19,26 @@ body {
     margin: 0;
     font-family: "Comic Sans MS", Arial, sans-serif;
     background: linear-gradient(135deg, #0f2027, #203a43, #ff4ecd);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     color: white;
     text-align: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    padding-top: 20px;
 }
 
-@keyframes flotar {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-    100% { transform: translateY(0px); }
+.boton-musica {
+    background: gold;
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-bottom: 20px;
 }
 
 .pregunta-grande {
@@ -65,19 +71,10 @@ button {
 .correct { background: #2ecc71; }
 .wrong { background: #e74c3c; }
 
-button:hover { opacity: 0.9; }
-
 .emoji {
     font-size: 160px;
     margin-top: 30px;
-    animation: flotar 3s infinite ease-in-out;
     transition: transform 0.3s;
-}
-
-.reiniciar {
-    background: gold;
-    color: black;
-    font-weight: bold;
 }
 
 @media (max-width: 900px) {
@@ -91,6 +88,10 @@ button:hover { opacity: 0.9; }
 
 <body>
 
+<!-- 🎵 BOTÓN DE MÚSICA -->
+<button class="boton-musica" onclick="toggleMusica()">🎵 Reproducir música</button>
+<audio id="musica" src="amarillo.mp3"></audio>
+
 <div class="pregunta-grande" id="pregunta"></div>
 
 <div class="card">
@@ -101,17 +102,30 @@ button:hover { opacity: 0.9; }
 
 <script>
 
-/* 📊 EVENTO VISITA */
 gtag('event', 'visita_quiz');
 
-/* 📜 EVENTO SCROLL */
-let scrolleado = false;
-window.addEventListener("scroll", () => {
-    if (!scrolleado) {
-        gtag('event', 'scroll_pagina');
-        scrolleado = true;
+const musica = document.getElementById("musica");
+let reproduciendo = false;
+
+function toggleMusica() {
+    const boton = document.querySelector(".boton-musica");
+
+    if (!reproduciendo) {
+        musica.play();
+        boton.textContent = "⏸ Pausar música";
+        reproduciendo = true;
+
+        gtag('event', 'play_musica');
+    } else {
+        musica.pause();
+        boton.textContent = "🎵 Reproducir música";
+        reproduciendo = false;
+
+        gtag('event', 'pausa_musica');
     }
-});
+}
+
+/* --------- PREGUNTAS --------- */
 
 const preguntasOriginales = [
 { emoji:"🤯", p:"¿Qué hace un programador cuando el código funciona?", o:["Llora","No lo toca jamás","Borra todo"], r:1 },
@@ -156,10 +170,7 @@ function nuevaPregunta() {
     document.getElementById("pregunta").textContent = actual.p;
     document.getElementById("emoji").textContent = actual.emoji;
 
-    gtag('event', 'nueva_pregunta', {
-        numero: indice,
-        pregunta: actual.p
-    });
+    gtag('event', 'nueva_pregunta', { numero: indice });
 
     const cont = document.getElementById("opciones");
     cont.innerHTML = "";
@@ -174,52 +185,31 @@ function nuevaPregunta() {
 
 function validar(i, boton) {
 
-    const emoji = document.getElementById("emoji");
     const correcta = i === actual.r;
 
-    gtag('event', 'respuesta', {
-        correcta: correcta,
-        pregunta: actual.p
-    });
+    gtag('event', 'respuesta', { correcta: correcta });
 
     if (correcta) {
         puntuacion++;
         boton.classList.add("correct");
-        emoji.style.transform = "scale(1.4) rotate(-10deg)";
     } else {
         boton.classList.add("wrong");
-        emoji.textContent = "💥";
-        emoji.style.transform = "scale(1.4) rotate(10deg)";
     }
 
-    setTimeout(() => {
-        emoji.style.transform = "scale(1)";
-        nuevaPregunta();
-    }, 900);
+    setTimeout(() => nuevaPregunta(), 800);
 }
 
 function mostrarResultado() {
 
-    gtag('event', 'quiz_terminado', {
-        puntuacion: puntuacion,
-        total: preguntas.length
-    });
+    gtag('event', 'quiz_terminado', { puntuacion: puntuacion });
 
     document.getElementById("pregunta").innerHTML =
         `🎉 Terminaste! <br> Puntuación: ${puntuacion} / ${preguntas.length}`;
 
     document.getElementById("opciones").innerHTML =
-        `<button class="reiniciar" onclick="iniciarJuego()">🔄 Jugar otra vez</button>`;
+        `<button onclick="iniciarJuego()">🔄 Jugar otra vez</button>`;
 
-    const emoji = document.getElementById("emoji");
-
-    if (puntuacion === preguntas.length) {
-        emoji.textContent = "🏆";
-    } else if (puntuacion > preguntas.length / 2) {
-        emoji.textContent = "😎";
-    } else {
-        emoji.textContent = "😂";
-    }
+    document.getElementById("emoji").textContent = "🏆";
 }
 
 iniciarJuego();
@@ -228,6 +218,8 @@ iniciarJuego();
 
 </body>
 </html>
+
+
 
 
 
